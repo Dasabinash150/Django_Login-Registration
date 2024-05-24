@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %}
+Home
+{% endblock title %}
+
+{% block body %}
+
+<div class="container my-5">
+    <center>
+        <div class="col-4">
+            <h1>{{user.email}}</h1>
+    <form method="post" class="border rounded shadow-lg p-3 form-group">
+        {% csrf_token %}
+       
+        <label for="otp" class="form-label">Enter you Otp</label>
+        <input type="number" id="otp" name="otp" class="form-control" required><br><br>
+        <input type="submit" value="verify" class="btn btn-primary">
+    </form>
+</div>
+</center>
+</div>
+
+{% endblock body %}

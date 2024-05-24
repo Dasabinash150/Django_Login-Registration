@@ -1,3 +1,4 @@
+import random
 from django.shortcuts import render,redirect
 from app.forms import *
 from django.http import HttpResponse
@@ -40,6 +41,7 @@ def register(request):
 
     return render(request, 'register.html',context)
 def home(request):
+    request.session.modified = True
     return render(request, 'home.html')
 
 def user_login(request):
@@ -50,6 +52,7 @@ def user_login(request):
         user = authenticate(username=username, password=password)
         if user is not None:
             login(request, user)
+            request.session['username']= username
             # return render(request, 'home.html', {'user':user} )
             return redirect('home')
         else:
@@ -60,6 +63,71 @@ def user_logout(request):
     logout(request)
     return render(request, 'home.html')
 
+# def user_profile(request):
+#     profile = Profile.objects.get(username=request.session)
+#     return render(request, 'user_profile.html',{'profile':profile})
 def user_profile(request):
-    profile = Profile.objects.get(username=request.user)
-    return render(request, 'user_profile.html',{'profile':profile})
+    try:
+        un = request.session['username']
+        user = User.objects.get(username=un)
+        d = {
+            'UO':user
+        }
+        request.session.modified = True
+        return render(request, 'user_profile.html', d)
+    except:
+        # return render(request, 'user_login.html')
+        return redirect('user_login')
+    
+def change_password(request):
+    username = request.session['username']
+    user = User.objects.get(username = username)
+    context ={
+        'user': user
+    }
+    email = user.get('email')
+    # print(user.email)
+    if request.method == "POST":
+        newpassword = request.POST.get('newpassword')
+        Cnewpassword = request.POST.get('Cnewpassword')
+        otp = random.randint(0,9999)
+        # print(user.email)
+        message = f"Your Otp is {otp} is valid for 3 mimnutes"
+        if newpassword == Cnewpassword:
+            send_mail(
+                'OTP for change Password',
+                message,
+                'das.15122003@gmail.com',
+                [email],
+                fail_silently=False,
+            )
+            request.session['otp'] = otp
+            request.session['newpassword'] = newpassword
+            return redirect('otp_verification')
+        else:
+            return HttpResponse("dont match")
+        
+
+    return render(request, 'change_password.html')
+
+
+def otp_verification(request):
+    otp = request.session['otp']
+    newpassword = request.session['newpassword']
+
+    username = request.session['username']
+    user = User.objects.get(username = username)
+
+    print(newpassword)
+    if request.method == "POST":
+        verify_otp = request.POST.get('otp')
+        print(type(verify_otp), "enter otp")
+        print(otp, "session otp")
+        if otp == int(verify_otp):
+            user.set_password(newpassword)
+            user.save()
+            print("Password changed successfully")
+            return redirect('user_login')
+        else:
+            return HttpResponse("Otp not matching")
+    return render(request, 'otp_verification.html')

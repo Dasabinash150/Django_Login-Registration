@@ -6,11 +6,15 @@ Home
 
 {% block body %}
 <div class="container">
-<h1>Username -{{user.username}}</h1>
+<h1>Username -{{UO.username}}</h1>
+<h1>Welcome -{{UO.first_name}} {{user.last_name}}</h1>
+<h1>Email -{{UO.email}}</h1>
+{% comment %} <h1>Username -{{user.username}}</h1>
 <h1>Welcome -{{user.first_name}} {{user.last_name}}</h1>
-<h1>Email -{{user.email}}</h1>
-<h1>Phone Number -{{profile.pno}}</h1>
-<img src="{{ profile.profile.url }}" alt="" style="width: 100px; height: 100px;">
+<h1>Email -{{user.email}}</h1> {% endcomment %}
+{% comment %} <h1>Phone Number -{{profile.pno}}</h1>
+<img src="{{ profile.profile.url }}" alt="" style="width: 100px; height: 100px;"> {% endcomment %}
+<a href="{% url 'change_password' %}" class="btn btn-primary">Change Password</a>
 
 </div>
 {% endblock body %}
