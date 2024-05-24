@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block title %}
+Home
+{% endblock title %}
+
+{% block body %}
+<div class="container">
+<h1>Username -{{user.username}}</h1>
+<h1>Welcome -{{user.first_name}} {{user.last_name}}</h1>
+<h1>Email -{{user.email}}</h1>
+<h1>Phone Number -{{profile.pno}}</h1>
+<img src="{{ profile.profile.url }}" alt="" style="width: 100px; height: 100px;">
+
+</div>
+{% endblock body %}
