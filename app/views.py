@@ -4,6 +4,7 @@ from app.forms import *
 from django.http import HttpResponse
 from django.core.mail import send_mail
 from django.contrib.auth import authenticate,login,logout
+from django.contrib import messages
 from app.models import Profile
 # Create your views here.
 
@@ -90,7 +91,7 @@ def change_password(request):
     if request.method == "POST":
         newpassword = request.POST.get('newpassword')
         Cnewpassword = request.POST.get('Cnewpassword')
-        otp = random.randint(0,9999)
+        otp = random.randint(1000,9999)
         # print(user.email)
         message = f"Your Otp is {otp} is valid for 3 mimnutes"
         if newpassword == Cnewpassword:
@@ -131,3 +132,52 @@ def otp_verification(request):
         else:
             return HttpResponse("Otp not matching")
     return render(request, 'otp_verification.html')
+
+
+def forgot_password(request):
+    try:
+        if request.method == 'POST':
+            un = request.POST.get('username')
+            user = User.objects.get(username = un)
+            print(user.email)
+            if user:
+
+                otp = random.randint(1000,9999)
+                message = f"Your Otp is {otp} is valid for 3 mimnutes"
+                send_mail(
+                    'OTP for change Password',
+                    message,
+                    'das.15122003@gmail.com',
+                    [user.email],
+                    fail_silently=False,
+                )
+
+                request.session['otp']  = otp
+                request.session['username'] = user.username
+                return render(request, 'forgot_password_otp.html')
+                # return redirect('forgot_password_otp')
+    except:    
+        return HttpResponse("User not found")
+    
+
+            # messages.error("user does not exist")
+            # return redirect('forgot_password')
+                
+    return render(request, 'forgot_password.html')
+
+def forgot_password_otp(request):
+    GOTP = request.session['otp']
+    if request.method == "POST":
+        GOTP = request.session['otp']
+        UOTP = request.POST.get('otp')
+
+        if str(GOTP) == UOTP:
+            return render(request, 'forgot_password_update.html')
+        
+        return HttpResponse("Otp not matching")
+
+            
+    return render(request, 'forgot_password_otp.html')
+
+def forgot_password_update(request):
+    return render(request, 'forgot_password_update.html')

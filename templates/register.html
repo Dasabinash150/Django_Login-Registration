@@ -3,6 +3,11 @@
 {% block title %}
 Register
 {% endblock title %}
+<style>
+    .form-contro{
+        background-color: red;
+    }
+</style>
 
 {% block body %}
 <center>
@@ -10,6 +15,11 @@ Register
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
         {{EUFO.as_p}}
+
+        <div class="mb-3">
+            <label for="exampleFormControlInput1" class="form-label">Username2</label>
+            {{EUFO.username}}
+          </div>        
         {{EPFO.as_p}}
         <input type="submit" value="register">
     </form>
